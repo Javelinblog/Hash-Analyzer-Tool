@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hash Analyzer Tool</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+        }
+
+        .hash-analyzer {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .text-area {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-bottom: 10px; /* Adjusted margin */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+        }
+
+        .result {
+            margin-top: 10px;
+            color: #333;
+        }
+
+        .analyze-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .analyze-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="hash-analyzer">
+        <div class="title">Hash Analyzer Tool</div>
+        <textarea class="text-area" placeholder="Enter hash here..." id="inputBox"></textarea>
+        <button class="analyze-button" onclick="analyzeHash()">Analyze</button>
+        <div class="result" id="resultBox"></div>
+    </div>
+</div>
+
+<script>
+    function analyzeHash() {
+        // Get the input value
+        const input = document.getElementById('inputBox').value.trim();
+
+        // Define hash detectors
+        const hashDetectors = [
+		    { type: 'MD2', regex: /^[0-9a-fA-F]{32}$/ },
+			{ type: 'MD4', regex: /^[0-9a-fA-F]{32}$/ },
+            { type: 'MD5', regex: /^[0-9a-fA-F]{32}$/ },
+            { type: 'SHA-1', regex: /^[0-9a-fA-F]{40}$/ },
+            { type: 'SHA-224', regex: /^[0-9a-fA-F]{56}$/ },
+            { type: 'SHA-256', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'SHA-384', regex: /^[0-9a-fA-F]{96}$/ },
+            { type: 'SHA-512', regex: /^[0-9a-fA-F]{128}$/ },
+            { type: 'SHA-3', regex: /^[0-9a-fA-F]{64}$/ },
+			{ type: 'md5($pass.$salt)', regex: /^[0-9a-fA-F]{32}:[0-9]+$/ },
+            { type: 'md5($salt.$pass)', regex: /^[0-9a-fA-F]{32}:[0-9]+$/ },
+            { type: 'md5(utf16le($pass).$salt)', regex: /^[0-9a-fA-F]{32}:[0-9]+$/ },
+            { type: 'md5($salt.utf16le($pass))', regex: /^[0-9a-fA-F]{32}:[0-9]+$/ },
+            { type: 'HMAC-MD5 (key = $pass)', regex: /^[0-9a-fA-F]{32}:[0-9]+$/ },
+            { type: 'HMAC-MD5 (key = $salt)', regex: /^[0-9a-fA-F]{32}:[0-9]+$/ },
+            { type: 'md5(utf16le($pass))', regex: /^[0-9a-fA-F]{32}$/ },
+            { type: 'SHA1', regex: /^[0-9a-fA-F]{40}$/ },
+            { type: 'sha1($pass.$salt)', regex: /^[0-9a-fA-F]{40}:[0-9]+$/ },
+            { type: 'sha1($salt.$pass)', regex: /^[0-9a-fA-F]{40}:[0-9]+$/ },
+            { type: 'sha1(utf16le($pass).$salt)', regex: /^[0-9a-fA-F]{40}:[0-9]+$/ },
+            { type: 'sha1($salt.utf16le($pass))', regex: /^[0-9a-fA-F]{40}:[0-9]+$/ },
+            { type: 'HMAC-SHA1 (key = $pass)', regex: /^[0-9a-fA-F]{40}:[0-9]+$/ },
+            { type: 'HMAC-SHA1 (key = $salt)', regex: /^[0-9a-fA-F]{40}:[0-9]+$/ },
+            { type: 'sha1(utf16le($pass))', regex: /^[0-9a-fA-F]{40}$/ },
+            { type: 'MySQL323', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'BLAKE2', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'Whirlpool', regex: /^[0-9a-fA-F]{128}$/ },
+            { type: 'RIPEMD-160', regex: /^[0-9a-fA-F]{40}$/ },
+            { type: 'GOST', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'Tiger', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'Skein', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'HAVAL', regex: /^[0-9a-fA-F]{32}$/ },
+            { type: 'Grøstl', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'JH', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'Keccak', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'SM3', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'Snefru', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'Streebog', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'CRC32', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'MurmurHash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'CityHash', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'xxHash', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'FNV-1', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'Jenkins Hash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'ELF Hash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'DJB2', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'Pearson Hash', regex: /^[0-9a-fA-F]{2}$/ },
+            { type: 'AP Hash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'BKDR Hash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'DEK Hash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'SDBM Hash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'Lose Lose Hash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'FNV-1a', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'Bernstein Hash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'ELF64 Hash', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'PJW Hash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'RS Hash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'Java HashCode', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'MurmurHash2', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'MurmurHash3', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'CityHash64', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'FNV-1a 64', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'SuperFastHash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'FarmHash', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'MetroHash', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'SpookyHash', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'HighwayHash', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'CityHash128', regex: /^[0-9a-fA-F]{32}$/ },
+            { type: 'xxHash64', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'xxHash3', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'FNV-1a 32', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'Lookup3', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'Jenkins Lookup2', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'DJBX33A', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'DJBX33X', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'DJB2A', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'AP Hash (Another Prime)', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'Zobrist Hashing', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'ELF Shift Hash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'ROT13 Hash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'Adler-32', regex: /^[0-9a-fA-F]{8}$/ },
+			{ type: 'BSD Checksum', regex: /^[0-9a-fA-F]{4}$/ },
+            { type: 'Adler-32 (Java)', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'Adler-32 (Python)', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'Jenkins-Hash (Lookup2)', regex: /^[0-9a-fA-F]{8}$/ },
+			{ type: 'Fletcher-16', regex: /^[0-9a-fA-F]{4}$/ },
+            { type: 'SHA-224 (Dobbertin)', regex: /^[0-9a-fA-F]{56}$/ },
+            { type: 'SHA-512/224', regex: /^[0-9a-fA-F]{56}$/ },
+            { type: 'SHA-512/256', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'SHA-3-224', regex: /^[0-9a-fA-F]{56}$/ },
+            { type: 'SHA-3-256', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'SHA-3-384', regex: /^[0-9a-fA-F]{96}$/ },
+            { type: 'SHA-3-512', regex: /^[0-9a-fA-F]{128}$/ },
+            { type: 'SHAKE128', regex: /^[0-9a-fA-F]{32}$/ },
+            { type: 'SHAKE256', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'Tiger2', regex: /^[0-9a-fA-F]{64}$/ },
+            { type: 'WHIRLPOOL0', regex: /^[0-9a-fA-F]{128}$/ },
+            { type: 'WHIRLPOOL1', regex: /^[0-9a-fA-F]{128}$/ },
+            { type: 'CRC16', regex: /^[0-9a-fA-F]{4}$/ },
+            { type: 'CRC16 CCITT', regex: /^[0-9a-fA-F]{4}$/ },
+            { type: 'FCS16', regex: /^[0-9a-fA-F]{4}$/ },
+            { type: 'FCS32', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'PJW32', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'ELF64 Unix', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'Sum32', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'SysV Hash', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'Sum64', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'XXH32', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'XXH64', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'XXH3', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'AP', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'HashMix', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'FNV64', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'DJBX31A', regex: /^[0-9a-fA-F]{8}$/ },
+            { type: 'SHA-0', regex: /^[0-9a-fA-F]{40}$/ },
+            { type: 'SipHash', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'SipHash13', regex: /^[0-9a-fA-F]{16}$/ },
+            { type: 'MurmurHash1', regex: /^[0-9a-fA-F]{8}$/ },
+			{ type: 'MySQL MD5', regex: /^[0-9a-fA-F]{32}$/ },
+            { type: 'MD5 Wordpress', regex: /^\$P\$[0-9a-zA-Z.\/]+$/ },
+            { type: 'MD5 phpBB', regex: /^\$H\$[0-9a-zA-Z.\/]+$/ },
+            { type: 'Oracle', regex: /^[0-9a-fA-F]{40}$/ },
+            { type: 'PHPS', regex: /^\$PHPS\$\w{6}[0-9a-fA-F]+$/ },
+            { type: 'Salted SHA', regex: /^\{SSHA\}[a-zA-Z0-9+\/]+=$/ },
+			{ type: 'NTLM', regex: /^[0-9A-Fa-f]{32}$/ },
+			{ type: 'NTLMv2', regex: /^[0-9A-Fa-f]{32}:[0-9A-Fa-f]{32}$/ },
+			{ type: 'DES', regex: /^[0-9A-Fa-f]{2}$/ },
+            { type: '3DES', regex: /^[0-9A-Fa-f]{48}$/ },
+			{ type: 'MySQL4.1/MySQL5', regex: /^[0-9a-fA-F]{40}$/ },
+            { type: 'phpass, WordPress (MD5), Joomla (MD5)', regex: /^\$P\$.{31}$/ },
+            { type: 'phpass, phpBB3 (MD5)', regex: /^\$H\$.{31}$/ },
+            { type: 'md5crypt, MD5 (Unix), Cisco-IOS $1$ (MD5)', regex: /^\$1\$[0-9a-zA-Z.\/]{8}\$[0-9a-zA-Z.\/]{22}$/ },
+            { type: 'Juniper IVE', regex: /^[a-zA-Z0-9+\/=]+$/ },
+            { type: 'BLAKE2b-512', regex: /^\$BLAKE2\$[0-9a-fA-F]{128}$/ },
+            { type: 'Argon2', regex: /\$argon2d\$/},
+
+
+
+
+
+
+
+            // Add more detectors as needed
+        ];
+
+        // Check for bcrypt hash (including salt and cost factor)
+        const bcryptRegex = /^\$2[ayb]\$.{56}$/;
+        if (bcryptRegex.test(input)) {
+            const [, costFactor, salt, hash] = input.split('$');
+            const detectedType = `Detected <b>bcrypt</b> hash<br>Cost Factor: ${costFactor}<br>Salt: ${salt}<br>Hash: ${hash}`;
+            displayResult(detectedType);
+            return;
+        }
+
+
+        
+		
+		
+
+
+        // Check if any detector matches
+        const detectedTypes = [];
+        for (const detector of hashDetectors) {
+            if (detector.regex.test(input)) {
+                detectedTypes.push(detector.type);
+            }
+        }
+
+    // Display the analysis result
+    const resultBox = document.getElementById('resultBox');
+    resultBox.textContent = ''; // Clear previous results
+
+    if (detectedTypes.length > 0) {
+        resultBox.innerHTML = '<strong>Detected Hash Types:</strong><br>';
+        detectedTypes.forEach(type => {
+            resultBox.innerHTML += type + '<br>';
+        });
+    } else {
+        resultBox.innerHTML = '<strong>No hash type detected.</strong>';
+    }
+}
+</script>
+
+</body>
+</html>
