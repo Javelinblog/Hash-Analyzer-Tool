@@ -2,6 +2,8 @@
 
 This is a simple web-based tool designed for analyzing hash values. It provides a user-friendly interface where you can input a hash value, and the tool will attempt to identify the hash type based on predefined patterns. The tool supports a variety of hash algorithms commonly used in cryptographic applications.
 
+https://htmlpreview.github.io/?https://raw.githubusercontent.com/Javelinblog/Hash-Analyzer-Tool/main/HashAnalyzer.html
+
 ## How to Use
 
 1. Open the HTML file in a web browser.
