@@ -517,7 +517,6 @@
     { type: 'Amazon AWS4-HMAC-SHA256', regex: /^amazon-aws4-hmac-sha256\$\S+$/ },
     { type: 'Kerberos 5, etype 17, DB', regex: /^kerberos5-etype-17-db\$\S+$/ },
     { type: 'Kerberos 5, etype 18, DB', regex: /^kerberos5-etype-18-db\$\S+$/ },
-    { type: 'sha1($salt.sha1(utf16le($username).':'.utf16le($pass)))', regex: /^sha1-salt-sha1-utf16le-username-pass\$\S+$/ },
     { type: 'Flask Session Cookie ($salt.$salt.$pass)', regex: /^flask-session-cookie-salt-salt-pass\$\S+$/ },
     { type: 'Radmin3', regex: /^radmin3\$\S+$/ },
     { type: 'TrueCrypt RIPEMD160 + XTS 512 bit', regex: /^truecrypt-ripemd160-xts-512\$\S+$/ },
