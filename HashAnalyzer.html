@@ -81,8 +81,8 @@
 
         // Define hash detectors
         const hashDetectors = [
-		    { type: 'MD2', regex: /^[0-9a-fA-F]{32}$/ },
-			{ type: 'MD4', regex: /^[0-9a-fA-F]{32}$/ },
+	    { type: 'MD2', regex: /^[0-9a-fA-F]{32}$/ },
+	    { type: 'MD4', regex: /^[0-9a-fA-F]{32}$/ },
             { type: 'MD5', regex: /^[0-9a-fA-F]{32}$/ },
             { type: 'SHA-1', regex: /^[0-9a-fA-F]{40}$/ },
             { type: 'SHA-224', regex: /^[0-9a-fA-F]{56}$/ },
@@ -90,7 +90,7 @@
             { type: 'SHA-384', regex: /^[0-9a-fA-F]{96}$/ },
             { type: 'SHA-512', regex: /^[0-9a-fA-F]{128}$/ },
             { type: 'SHA-3', regex: /^[0-9a-fA-F]{64}$/ },
-			{ type: 'md5($pass.$salt)', regex: /^[0-9a-fA-F]{32}:[0-9]+$/ },
+	    { type: 'md5($pass.$salt)', regex: /^[0-9a-fA-F]{32}:[0-9]+$/ },
             { type: 'md5($salt.$pass)', regex: /^[0-9a-fA-F]{32}:[0-9]+$/ },
             { type: 'md5(utf16le($pass).$salt)', regex: /^[0-9a-fA-F]{32}:[0-9]+$/ },
             { type: 'md5($salt.utf16le($pass))', regex: /^[0-9a-fA-F]{32}:[0-9]+$/ },
